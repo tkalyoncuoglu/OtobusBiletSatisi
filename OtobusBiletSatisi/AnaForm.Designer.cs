@@ -36,30 +36,30 @@
             // 
             // txt_duzen
             // 
-            this.txt_duzen.Location = new System.Drawing.Point(919, 31);
+            this.txt_duzen.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.txt_duzen.Location = new System.Drawing.Point(732, 53);
             this.txt_duzen.Multiline = true;
             this.txt_duzen.Name = "txt_duzen";
-            this.txt_duzen.Size = new System.Drawing.Size(68, 208);
+            this.txt_duzen.Size = new System.Drawing.Size(235, 343);
             this.txt_duzen.TabIndex = 0;
             this.txt_duzen.Text = "** **\r\n** **\r\n** **\r\n** **\r\n** **\r\n**\r\n** **\r\n** **\r\n** **\r\n** **\r\n** **\r\n*****\r\n" +
     "";
-            this.txt_duzen.Visible = false;
             // 
             // panel1
             // 
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(249, 495);
+            this.panel1.Size = new System.Drawing.Size(678, 495);
             this.panel1.TabIndex = 1;
             // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(249, 0);
+            this.dataGridView1.Location = new System.Drawing.Point(678, 0);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(788, 495);
+            this.dataGridView1.Size = new System.Drawing.Size(359, 495);
             this.dataGridView1.TabIndex = 2;
             // 
             // AnaForm

@@ -76,8 +76,6 @@ namespace OtobusBiletSatisi
                     btn.Text += " K";
                 dgv_update();
             }
-
-
         }
         private void dgv_update()
         {
