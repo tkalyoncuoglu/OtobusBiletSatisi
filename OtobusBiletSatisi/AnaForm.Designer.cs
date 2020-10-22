@@ -36,10 +36,10 @@
             // 
             // txt_duzen
             // 
-            this.txt_duzen.Location = new System.Drawing.Point(201, 0);
+            this.txt_duzen.Location = new System.Drawing.Point(919, 31);
             this.txt_duzen.Multiline = true;
             this.txt_duzen.Name = "txt_duzen";
-            this.txt_duzen.Size = new System.Drawing.Size(31, 159);
+            this.txt_duzen.Size = new System.Drawing.Size(68, 208);
             this.txt_duzen.TabIndex = 0;
             this.txt_duzen.Text = "** **\r\n** **\r\n** **\r\n** **\r\n** **\r\n**\r\n** **\r\n** **\r\n** **\r\n** **\r\n** **\r\n*****\r\n" +
     "";
@@ -67,9 +67,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1037, 495);
+            this.Controls.Add(this.txt_duzen);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.txt_duzen);
             this.Name = "AnaForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "AnaForm";
