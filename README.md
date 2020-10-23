@@ -5,6 +5,8 @@
 * Yapılan işleme göre Button'un rengi değiştiriliyor ve seçilen cinsiyet Button'un Text'ine yazılıyor.
 * Datalar bir DataTable içerisinde tutularak DataGridView'de gösterildi.
 
+Dersin URL'si: https://mustafabukulmez.com/2020/10/23/c-otobus-bilet-satis-uygulamasi-basit-duzey/
+
 # Bu proje, aşağıdaki iki derste anlatılan konular kullanarak hazırlanmıştır... 
 * https://mustafabukulmez.com/2020/07/15/c-datatable-example-ornek-datatable/
 * https://mustafabukulmez.com/2020/07/08/c-dinamik-button-ve-dinamik-duzen/
