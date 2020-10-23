@@ -19,11 +19,18 @@ namespace OtobusBiletSatisi
         private void Form1_Load(object sender, EventArgs e)
         {
             MyData.DataTable_Yolcular();
-            DuzenKur();
+            MyData.DataTable_Otobus();
+
+
+
+            cmb_otobus.DataSource = MyData.table_otobus;
+            cmb_otobus.DisplayMember = "Plaka";
+
         }
 
         void DuzenKur()
         {
+            DataTable dt = MyData.table_yolcu;
             int say = 0;
             panel1.Controls.Clear();
             int olcu = 38;
@@ -35,9 +42,45 @@ namespace OtobusBiletSatisi
                     if (satir[j] == '*') // satırdaki j index'ine denk gelen ifade * ise
                     {
                         Button nesne = new Button();
-                        nesne.Text = (++say).ToString();
-                        nesne.Name = "buton_" + nesne.Text;
-                        nesne.BackColor = Color.Red;
+                        int id = ++say;
+                        nesne.Name = "buton_" + id;
+                        string cinsiyet = "";
+                        int durum = 0;
+
+                        var results = from DataRow myRow in dt.Rows
+                                      where (int)myRow["Koltuk_No"] == id & (string)myRow["Otobus_Plaka"] == cmb_otobus.Text
+                                      select new
+                                      {
+                                          cinsiyet = myRow.Field<string>("Cinsiyet").ToString().Substring(0, 1),
+                                          durum = myRow.Field<int>("Durum"),
+                                      };
+                        try
+                        {
+                            var resultsList = results.ToList();
+                            cinsiyet = resultsList[0].cinsiyet;
+                            durum = resultsList[0].durum;
+                        }
+                        catch (InvalidOperationException)
+                        {
+
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+
+                        }
+
+                        nesne.Text = id.ToString() + " " + cinsiyet;
+                        nesne.BackColor = Color.LightGray;
+                        switch (durum)
+                        {
+                            case 1:
+                                nesne.BackColor = Color.GreenYellow;
+                                break;
+                            case 2:
+                                nesne.BackColor = Color.Yellow;
+                                break;
+                        }
+
                         nesne.Width = nesne.Height = 40;
                         nesne.Left = olcu * j;// butonun nerede duracağı
                         nesne.Top = olcu * i; // butonun nerede duracağı
@@ -59,12 +102,19 @@ namespace OtobusBiletSatisi
             string cinsiyet = fr.cmb_musteri_cinsiyet.Text;
             if (fr.tamam == 1)
             {
-                MyData.DataTable_Yolcular_Insert(Convert.ToInt32(fr.lbl_koltuk_no.Text), durum, fr.txt_mustari.Text, cinsiyet, Convert.ToDateTime(fr.lbl_tarih.Text), fr.lbl_gorevli.Text);
-
+                MyData.DataTable_Yolcular_Insert(
+                    Convert.ToInt32(fr.lbl_koltuk_no.Text)
+                    , durum
+                    , fr.txt_mustari.Text
+                    , cinsiyet
+                    , Convert.ToDateTime(fr.lbl_tarih.Text)
+                    , fr.lbl_gorevli.Text
+                    , cmb_otobus.Text);
+                btn.BackColor = Color.LightGray;
                 switch (durum)
                 {
                     case 1:
-                        btn.BackColor = Color.YellowGreen;
+                        btn.BackColor = Color.GreenYellow;
                         break;
                     case 2:
                         btn.BackColor = Color.Yellow;
@@ -79,7 +129,29 @@ namespace OtobusBiletSatisi
         }
         private void dgv_update()
         {
-            dataGridView1.DataSource = MyData.table;
+            var results = MyData.table_yolcu.AsEnumerable().Where(myRow => myRow.Field<string>("Otobus_Plaka") == cmb_otobus.Text);
+            DataView view = results.AsDataView();
+            dataGridView1.DataSource = view;
+
+
+            //MyData.table_yolcu;
+            //var results = from DataRow myRow in MyData.table_yolcu.Rows
+            //              where (string)myRow["yol_Otobus_Plaka"] == cmb_otobus.Text
+            //              select myRow;
+        }
+
+        private void cmb_otobus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dgv_update();
+            DuzenKur();
+        }
+
+        private void koltukDüzenPatternAlanıGösterGizleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (txt_duzen.Visible == false)
+                txt_duzen.Visible = true;
+            else
+                txt_duzen.Visible = false;
         }
     }
 }
