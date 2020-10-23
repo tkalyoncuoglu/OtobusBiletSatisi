@@ -19,6 +19,8 @@ namespace OtobusBiletSatisi
         private void Islem_Yap_Load(object sender, EventArgs e)
         {
             lbl_tarih.Text = DateTime.Now.ToString();
+            cmb_islem.SelectedIndex = 0;
+            cmb_musteri_cinsiyet.SelectedIndex = 0;
         }
 
         private void btn_iptal_Click(object sender, EventArgs e)
@@ -28,14 +30,24 @@ namespace OtobusBiletSatisi
         public int tamam = 0;
         private void btn_kadyet_Click(object sender, EventArgs e)
         {
-            if (txt_mustari.Text.Length > 0 && cmb_musteri_cinsiyet.SelectedIndex >= 0 && cmb_islem.SelectedIndex >= 0)
+            if (cmb_islem.SelectedIndex == 2)
             {
-                tamam = 1;
+                tamam = 2;
+                txt_mustari.Text = "Koltuk İptal";
+               // cmb_musteri_cinsiyet.SelectedIndex = -1;
                 Close();
             }
             else
             {
-                MessageBox.Show("*'lı alanları boş bırakamazsınız.", "Zorunlu Alan", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                if (txt_mustari.Text.Length > 0 && cmb_musteri_cinsiyet.SelectedIndex >= 0 && cmb_islem.SelectedIndex >= 0)
+                {
+                    tamam = 1;
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show("*'lı alanları boş bırakamazsınız.", "Zorunlu Alan", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                }
             }
         }
     }

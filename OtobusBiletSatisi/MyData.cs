@@ -14,7 +14,7 @@ namespace OtobusBiletSatisi
             table_yolcu = new DataTable("Yolcular");
             table_yolcu.Columns.Add(new DataColumn("ID", typeof(int)));
             table_yolcu.Columns.Add(new DataColumn("Koltuk_No", typeof(int)));
-            table_yolcu.Columns.Add(new DataColumn("Durum", typeof(int))); // 0 boş, 1 satış, 2 rezerve
+            table_yolcu.Columns.Add(new DataColumn("Durum", typeof(int))); // 0 boş, 1 satış, 2 rezerve, 3 kullanılamaz
             table_yolcu.Columns.Add(new DataColumn("Ad_Soyad", typeof(string)));
             table_yolcu.Columns.Add(new DataColumn("Cinsiyet", typeof(string)));
             table_yolcu.Columns.Add(new DataColumn("Islem_Tarih", typeof(DateTime)));

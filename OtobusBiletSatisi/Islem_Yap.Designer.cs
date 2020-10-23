@@ -114,6 +114,8 @@
             // 
             // cmb_musteri_cinsiyet
             // 
+            this.cmb_musteri_cinsiyet.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.cmb_musteri_cinsiyet.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cmb_musteri_cinsiyet.FormattingEnabled = true;
             this.cmb_musteri_cinsiyet.Items.AddRange(new object[] {
             "Erkek",
@@ -145,22 +147,24 @@
             // 
             // btn_iptal
             // 
-            this.btn_iptal.Location = new System.Drawing.Point(31, 190);
+            this.btn_iptal.BackColor = System.Drawing.Color.Tomato;
+            this.btn_iptal.Location = new System.Drawing.Point(40, 168);
             this.btn_iptal.Name = "btn_iptal";
             this.btn_iptal.Size = new System.Drawing.Size(99, 48);
             this.btn_iptal.TabIndex = 11;
             this.btn_iptal.Text = "İptal";
-            this.btn_iptal.UseVisualStyleBackColor = true;
+            this.btn_iptal.UseVisualStyleBackColor = false;
             this.btn_iptal.Click += new System.EventHandler(this.btn_iptal_Click);
             // 
             // btn_kadyet
             // 
-            this.btn_kadyet.Location = new System.Drawing.Point(135, 190);
+            this.btn_kadyet.BackColor = System.Drawing.Color.YellowGreen;
+            this.btn_kadyet.Location = new System.Drawing.Point(144, 168);
             this.btn_kadyet.Name = "btn_kadyet";
             this.btn_kadyet.Size = new System.Drawing.Size(99, 48);
             this.btn_kadyet.TabIndex = 12;
             this.btn_kadyet.Text = "Kaydet";
-            this.btn_kadyet.UseVisualStyleBackColor = true;
+            this.btn_kadyet.UseVisualStyleBackColor = false;
             this.btn_kadyet.Click += new System.EventHandler(this.btn_kadyet_Click);
             // 
             // label6
@@ -175,10 +179,13 @@
             // 
             // cmb_islem
             // 
+            this.cmb_islem.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.cmb_islem.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cmb_islem.FormattingEnabled = true;
             this.cmb_islem.Items.AddRange(new object[] {
+            "Rezerve",
             "Satış",
-            "Rezerve"});
+            "Kullanılamaz"});
             this.cmb_islem.Location = new System.Drawing.Point(142, 121);
             this.cmb_islem.Name = "cmb_islem";
             this.cmb_islem.Size = new System.Drawing.Size(121, 21);
@@ -186,9 +193,11 @@
             // 
             // Islem_Yap
             // 
+            this.AcceptButton = this.btn_kadyet;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(283, 274);
+            this.CancelButton = this.btn_iptal;
+            this.ClientSize = new System.Drawing.Size(283, 236);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.cmb_islem);
             this.Controls.Add(this.btn_kadyet);

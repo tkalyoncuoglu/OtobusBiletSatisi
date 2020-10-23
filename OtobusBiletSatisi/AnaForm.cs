@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -21,7 +22,7 @@ namespace OtobusBiletSatisi
             MyData.DataTable_Yolcular();
             MyData.DataTable_Otobus();
 
-
+            panel1.Width = 207;
 
             cmb_otobus.DataSource = MyData.table_otobus;
             cmb_otobus.DisplayMember = "Plaka";
@@ -33,7 +34,12 @@ namespace OtobusBiletSatisi
             DataTable dt = MyData.table_yolcu;
             int say = 0;
             panel1.Controls.Clear();
-            int olcu = 38;
+            int olcu = 41;
+
+
+
+
+
             for (int i = 0; i < txt_duzen.Lines.Count(); i++)// textbox satırları arasında
             {
                 for (int j = 0; j < txt_duzen.Lines[i].Count(); j++) // bir satırdaki karakterler arasında
@@ -42,6 +48,18 @@ namespace OtobusBiletSatisi
                     if (satir[j] == '*') // satırdaki j index'ine denk gelen ifade * ise
                     {
                         Button nesne = new Button();
+                        nesne.Width = nesne.Height = 40;
+                        nesne.Left = olcu * j;// butonun nerede duracağı
+                        nesne.Top = olcu * i; // butonun nerede duracağı
+
+
+                        // Burada buttonları elips şeklinde yapmak istedim. 
+                        // tam istediğim gibi elips olmadı ama daha hoş olduğu gibi geldi. :D Bu sebeple olduğu gibi bıraktım. 
+                        GraphicsPath p = new GraphicsPath();
+                        p.AddEllipse(1, 1, nesne.Width, nesne.Height);
+                        nesne.Region = new Region(p);
+
+
                         int id = ++say;
                         nesne.Name = "buton_" + id;
                         string cinsiyet = "";
@@ -60,30 +78,28 @@ namespace OtobusBiletSatisi
                             cinsiyet = resultsList[0].cinsiyet;
                             durum = resultsList[0].durum;
                         }
-                        catch (InvalidOperationException)
-                        {
+                        catch (InvalidOperationException) { }
+                        catch (ArgumentOutOfRangeException) { }
 
-                        }
-                        catch (ArgumentOutOfRangeException)
-                        {
-
-                        }
-
-                        nesne.Text = id.ToString() + " " + cinsiyet;
-                        nesne.BackColor = Color.LightGray;
+                        nesne.Text = id.ToString();
+                        nesne.BackColor = Color.Tomato;
                         switch (durum)
                         {
                             case 1:
                                 nesne.BackColor = Color.GreenYellow;
+                                nesne.Text = id.ToString() + " " + cinsiyet;
                                 break;
                             case 2:
                                 nesne.BackColor = Color.Yellow;
+                                nesne.Text = id.ToString() + " " + cinsiyet;
+                                break;
+                            case 3:
+                                nesne.Text = id.ToString();
+                                nesne.BackColor = Color.Black;
+                                nesne.ForeColor = Color.White;
                                 break;
                         }
 
-                        nesne.Width = nesne.Height = 40;
-                        nesne.Left = olcu * j;// butonun nerede duracağı
-                        nesne.Top = olcu * i; // butonun nerede duracağı
                         panel1.Controls.Add(nesne);
                         nesne.Click += ButtonClick;
                     }
@@ -100,7 +116,7 @@ namespace OtobusBiletSatisi
             fr.ShowDialog();
             int durum = fr.cmb_islem.SelectedIndex + 1;
             string cinsiyet = fr.cmb_musteri_cinsiyet.Text;
-            if (fr.tamam == 1)
+            if (fr.tamam >= 1)
             {
                 MyData.DataTable_Yolcular_Insert(
                     Convert.ToInt32(fr.lbl_koltuk_no.Text)
@@ -110,34 +126,32 @@ namespace OtobusBiletSatisi
                     , Convert.ToDateTime(fr.lbl_tarih.Text)
                     , fr.lbl_gorevli.Text
                     , cmb_otobus.Text);
-                btn.BackColor = Color.LightGray;
+                btn.BackColor = Color.Tomato;
                 switch (durum)
                 {
                     case 1:
                         btn.BackColor = Color.GreenYellow;
+                        if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
                         break;
                     case 2:
                         btn.BackColor = Color.Yellow;
+                        if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
+                        break;
+                    case 3:
+                        btn.BackColor = Color.Black;
+                        btn.ForeColor = Color.White;
                         break;
                 }
-                if (cinsiyet == "Erkek")
-                    btn.Text += " E";
-                else
-                    btn.Text += " K";
+
                 dgv_update();
             }
+
         }
         private void dgv_update()
         {
             var results = MyData.table_yolcu.AsEnumerable().Where(myRow => myRow.Field<string>("Otobus_Plaka") == cmb_otobus.Text);
             DataView view = results.AsDataView();
             dataGridView1.DataSource = view;
-
-
-            //MyData.table_yolcu;
-            //var results = from DataRow myRow in MyData.table_yolcu.Rows
-            //              where (string)myRow["yol_Otobus_Plaka"] == cmb_otobus.Text
-            //              select myRow;
         }
 
         private void cmb_otobus_SelectedIndexChanged(object sender, EventArgs e)
