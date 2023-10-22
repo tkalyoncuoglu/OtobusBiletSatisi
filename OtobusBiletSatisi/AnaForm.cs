@@ -12,6 +12,16 @@ namespace OtobusBiletSatisi
 {
     public partial class AnaForm : Form
     {
+        private class Result
+        {
+            public int Id {  get; set; }
+            public int KoltukNo { get; set; }
+            public string Cinsiyet { get; set; }
+            public int Durum { get; set; }
+
+            public string AdSoyad { get; set; }
+        }
+
         public AnaForm()
         {
             InitializeComponent();
@@ -37,7 +47,15 @@ namespace OtobusBiletSatisi
             int olcu = 41;
 
 
-
+            var results = (from DataRow myRow in dt.Rows
+                           where (string)myRow["Otobus_Plaka"] == cmb_otobus.Text
+                           select new Result
+                           {
+                               KoltukNo = myRow.Field<int>("Koltuk_No"),
+                               Cinsiyet = myRow.Field<string>("Cinsiyet").ToString().Substring(0, 1),
+                               Durum = myRow.Field<int>("Durum")
+                           }
+                          ).ToDictionary(x => x.KoltukNo);
 
 
             for (int i = 0; i < txt_duzen.Lines.Count(); i++)// textbox satırları arasında
@@ -63,37 +81,27 @@ namespace OtobusBiletSatisi
                         int id = ++say;
                         nesne.Name = "buton_" + id;
                         string cinsiyet = "";
-                        int durum = 0;
+                        int durum = -1;
 
-                        var results = from DataRow myRow in dt.Rows
-                                      where (int)myRow["Koltuk_No"] == id & (string)myRow["Otobus_Plaka"] == cmb_otobus.Text
-                                      select new
-                                      {
-                                          cinsiyet = myRow.Field<string>("Cinsiyet").ToString().Substring(0, 1),
-                                          durum = myRow.Field<int>("Durum"),
-                                      };
-                        try
+                        if(results.ContainsKey(id))
                         {
-                            var resultsList = results.ToList();
-                            cinsiyet = resultsList[0].cinsiyet;
-                            durum = resultsList[0].durum;
+                            cinsiyet = results[id].Cinsiyet;
+                            durum = results[id].Durum;
                         }
-                        catch (InvalidOperationException) { }
-                        catch (ArgumentOutOfRangeException) { }
-
+                        
                         nesne.Text = id.ToString();
                         nesne.BackColor = Color.Tomato;
                         switch (durum)
                         {
+                            case 0:
+                                nesne.BackColor = Color.Yellow;
+                                nesne.Text = id.ToString() + " " + cinsiyet;
+                                break;
                             case 1:
                                 nesne.BackColor = Color.GreenYellow;
                                 nesne.Text = id.ToString() + " " + cinsiyet;
                                 break;
                             case 2:
-                                nesne.BackColor = Color.Yellow;
-                                nesne.Text = id.ToString() + " " + cinsiyet;
-                                break;
-                            case 3:
                                 nesne.Text = id.ToString();
                                 nesne.BackColor = Color.Black;
                                 nesne.ForeColor = Color.White;
@@ -111,40 +119,78 @@ namespace OtobusBiletSatisi
         {
             Button btn = (Button)sender;
 
-            Islem_Yap fr = new Islem_Yap();
-            fr.lbl_koltuk_no.Text = btn.Name.Split('_')[1];
-            fr.ShowDialog();
-            int durum = fr.cmb_islem.SelectedIndex + 1;
-            string cinsiyet = fr.cmb_musteri_cinsiyet.Text;
-            if (fr.tamam >= 1)
-            {
-                MyData.DataTable_Yolcular_Insert(
-                    Convert.ToInt32(fr.lbl_koltuk_no.Text)
-                    , durum
-                    , fr.txt_mustari.Text
-                    , cinsiyet
-                    , Convert.ToDateTime(fr.lbl_tarih.Text)
-                    , fr.lbl_gorevli.Text
-                    , cmb_otobus.Text);
-                btn.BackColor = Color.Tomato;
-                switch (durum)
-                {
-                    case 1:
-                        btn.BackColor = Color.GreenYellow;
-                        if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
-                        break;
-                    case 2:
-                        btn.BackColor = Color.Yellow;
-                        if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
-                        break;
-                    case 3:
-                        btn.BackColor = Color.Black;
-                        btn.ForeColor = Color.White;
-                        break;
-                }
+            DataTable dt = MyData.table_yolcu;
 
-                dgv_update();
+            var koltukNo = Convert.ToInt32(btn.Name.Split('_')[1]);
+
+            var result = (from DataRow myRow in dt.Rows
+                           where (string)myRow["Otobus_Plaka"] == cmb_otobus.Text && (int)myRow["Koltuk_No"] == koltukNo
+                          select new Result
+                          {
+                              Id = myRow.Field<int>("ID"),
+                              KoltukNo = myRow.Field<int>("Koltuk_No"),
+                              Cinsiyet = myRow.Field<string>("Cinsiyet").ToString().Substring(0, 1),
+                              Durum = myRow.Field<int>("Durum"),
+                              AdSoyad = myRow.Field<string>("Ad_Soyad")
+                          }
+                          ).FirstOrDefault();
+            if (result == null)
+            {
+                Islem_Yap fr = new Islem_Yap();
+                fr.lbl_koltuk_no.Text = btn.Name.Split('_')[1];
+                var r = fr.ShowDialog();
+                int durum = fr.cmb_islem.SelectedIndex;
+                string cinsiyet = fr.cmb_musteri_cinsiyet.SelectedItem as string;
+                if (r == DialogResult.OK)
+                {
+                    if (durum != 2)
+                    {
+                        MyData.DataTable_Yolcular_Insert(
+                            Convert.ToInt32(fr.lbl_koltuk_no.Text)
+                            , durum
+                            , fr.txt_mustari.Text
+                            , cinsiyet
+                            , Convert.ToDateTime(fr.lbl_tarih.Text)
+                            , fr.lbl_gorevli.Text
+                            , cmb_otobus.Text);
+                        btn.BackColor = Color.Tomato;
+                    }
+                    switch (durum)
+                    {
+                        case 0:
+                            btn.BackColor = Color.Yellow;
+                            if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
+                            break;
+                        case 1:
+                            btn.BackColor = Color.GreenYellow;
+                            if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
+                            break;
+
+                        case 2:
+                            btn.BackColor = Color.Black;
+                            btn.ForeColor = Color.White;
+                            break;
+                    }
+                }
             }
+            else
+            {
+                Islem_Yap2 fr = new Islem_Yap2();
+                fr.lbl_koltuk_no.Text = btn.Name.Split('_')[1];
+                fr.txt_mustari.Text = result.AdSoyad;
+                fr.txt_mustari.Enabled = false;
+                fr.cmb_musteri_cinsiyet.SelectedIndex = result.Cinsiyet == "E" ? 0 : 1;
+                fr.cmb_musteri_cinsiyet.Enabled = false;
+                var r = fr.ShowDialog();
+                if (r == DialogResult.OK)
+                {
+                    var rowToDelete = dt.AsEnumerable().Where(row => row.Field<int>("ID") == result.Id).First();
+
+                    dt.Rows.Remove(rowToDelete);
+                }
+                DuzenKur();
+            }
+            dgv_update();
 
         }
         private void dgv_update()
@@ -167,5 +213,7 @@ namespace OtobusBiletSatisi
             else
                 txt_duzen.Visible = false;
         }
+
+       
     }
 }
