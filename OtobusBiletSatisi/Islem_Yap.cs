@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtobusBiletSatisi.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +12,7 @@ namespace OtobusBiletSatisi
 {
     public partial class Islem_Yap : Form
     {
+        public Yolcu Data { get; set; }
         public Islem_Yap()
         {
             InitializeComponent();
@@ -34,6 +36,14 @@ namespace OtobusBiletSatisi
             
             if (txt_mustari.Text.Length > 0 && cmb_musteri_cinsiyet.SelectedIndex >= 0 && cmb_islem.SelectedIndex >= 0)
             {
+                Data = new Yolcu();
+                Data.AdSoyad = txt_mustari.Text;
+                Data.Cinsiyet = (string)cmb_musteri_cinsiyet.SelectedItem;
+                Data.Durum = (int)cmb_islem.SelectedIndex;
+                Data.KoltukNo = Convert.ToInt32(lbl_koltuk_no.Text);
+                Data.IslemTarihi = Convert.ToDateTime(lbl_tarih.Text);
+                Data.IslemYapan = lbl_gorevli.Text;
+
                 DialogResult = DialogResult.OK;
                 Close();
             }

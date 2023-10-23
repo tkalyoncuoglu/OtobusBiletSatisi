@@ -53,6 +53,10 @@
     <Compile Include="AnaForm.Designer.cs">
       <DependentUpon>AnaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data\IOtobusRepository.cs" />
+    <Compile Include="Data\IYolcuRepository.cs" />
+    <Compile Include="Data\OtobusRepository.cs" />
+    <Compile Include="Data\YolcuRepository.cs" />
     <Compile Include="Islem_Yap2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,7 +69,8 @@
     <Compile Include="Islem_Yap.Designer.cs">
       <DependentUpon>Islem_Yap.cs</DependentUpon>
     </Compile>
-    <Compile Include="MyData.cs" />
+    <Compile Include="Models\Otobus.cs" />
+    <Compile Include="Models\Yolcu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AnaForm.resx">

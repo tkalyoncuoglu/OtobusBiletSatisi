@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OtobusBiletSatisi.Data;
+using OtobusBiletSatisi.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,15 +14,10 @@ namespace OtobusBiletSatisi
 {
     public partial class AnaForm : Form
     {
-        private class Result
-        {
-            public int Id {  get; set; }
-            public int KoltukNo { get; set; }
-            public string Cinsiyet { get; set; }
-            public int Durum { get; set; }
+       
+        private IYolcuRepository yolcuRepository = new YolcuRepository();
 
-            public string AdSoyad { get; set; }
-        }
+        private IOtobusRepository otobusRepository = new OtobusRepository();
 
         public AnaForm()
         {
@@ -29,34 +26,22 @@ namespace OtobusBiletSatisi
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            MyData.DataTable_Yolcular();
-            MyData.DataTable_Otobus();
-
+            
             panel1.Width = 207;
 
-            cmb_otobus.DataSource = MyData.table_otobus;
+            cmb_otobus.DataSource = otobusRepository.GetAll();
             cmb_otobus.DisplayMember = "Plaka";
 
         }
 
         void DuzenKur()
         {
-            DataTable dt = MyData.table_yolcu;
+           
             int say = 0;
             panel1.Controls.Clear();
             int olcu = 41;
 
-
-            var results = (from DataRow myRow in dt.Rows
-                           where (string)myRow["Otobus_Plaka"] == cmb_otobus.Text
-                           select new Result
-                           {
-                               KoltukNo = myRow.Field<int>("Koltuk_No"),
-                               Cinsiyet = myRow.Field<string>("Cinsiyet").ToString().Substring(0, 1),
-                               Durum = myRow.Field<int>("Durum")
-                           }
-                          ).ToDictionary(x => x.KoltukNo);
-
+            var results = yolcuRepository.GetAll(cmb_otobus.Text).ToDictionary(x => x.KoltukNo);
 
             for (int i = 0; i < txt_duzen.Lines.Count(); i++)// textbox satırları arasında
             {
@@ -78,31 +63,36 @@ namespace OtobusBiletSatisi
                         nesne.Region = new Region(p);
 
 
-                        int id = ++say;
-                        nesne.Name = "buton_" + id;
+                        int koltukNo = ++say;
+                        nesne.Name = "buton_" + koltukNo;
                         string cinsiyet = "";
                         int durum = -1;
 
-                        if(results.ContainsKey(id))
+                        if(results.ContainsKey(koltukNo))
                         {
-                            cinsiyet = results[id].Cinsiyet;
-                            durum = results[id].Durum;
+                            cinsiyet = results[koltukNo].Cinsiyet;
+                            durum = results[koltukNo].Durum;
+                            nesne.Tag = results[koltukNo];
+                        }
+                        else
+                        {
+                            nesne.Tag = null;
                         }
                         
-                        nesne.Text = id.ToString();
+                        nesne.Text = koltukNo.ToString();
                         nesne.BackColor = Color.Tomato;
                         switch (durum)
                         {
                             case 0:
                                 nesne.BackColor = Color.Yellow;
-                                nesne.Text = id.ToString() + " " + cinsiyet;
+                                nesne.Text = koltukNo.ToString() + " " + cinsiyet;
                                 break;
                             case 1:
                                 nesne.BackColor = Color.GreenYellow;
-                                nesne.Text = id.ToString() + " " + cinsiyet;
+                                nesne.Text = koltukNo.ToString() + " " + cinsiyet;
                                 break;
                             case 2:
-                                nesne.Text = id.ToString();
+                                nesne.Text = koltukNo.ToString();
                                 nesne.BackColor = Color.Black;
                                 nesne.ForeColor = Color.White;
                                 break;
@@ -119,22 +109,9 @@ namespace OtobusBiletSatisi
         {
             Button btn = (Button)sender;
 
-            DataTable dt = MyData.table_yolcu;
+            var yolcu = btn.Tag as Yolcu;
 
-            var koltukNo = Convert.ToInt32(btn.Name.Split('_')[1]);
-
-            var result = (from DataRow myRow in dt.Rows
-                           where (string)myRow["Otobus_Plaka"] == cmb_otobus.Text && (int)myRow["Koltuk_No"] == koltukNo
-                          select new Result
-                          {
-                              Id = myRow.Field<int>("ID"),
-                              KoltukNo = myRow.Field<int>("Koltuk_No"),
-                              Cinsiyet = myRow.Field<string>("Cinsiyet").ToString().Substring(0, 1),
-                              Durum = myRow.Field<int>("Durum"),
-                              AdSoyad = myRow.Field<string>("Ad_Soyad")
-                          }
-                          ).FirstOrDefault();
-            if (result == null)
+            if (yolcu == null)
             {
                 Islem_Yap fr = new Islem_Yap();
                 fr.lbl_koltuk_no.Text = btn.Name.Split('_')[1];
@@ -143,18 +120,11 @@ namespace OtobusBiletSatisi
                 string cinsiyet = fr.cmb_musteri_cinsiyet.SelectedItem as string;
                 if (r == DialogResult.OK)
                 {
-                    if (durum != 2)
-                    {
-                        MyData.DataTable_Yolcular_Insert(
-                            Convert.ToInt32(fr.lbl_koltuk_no.Text)
-                            , durum
-                            , fr.txt_mustari.Text
-                            , cinsiyet
-                            , Convert.ToDateTime(fr.lbl_tarih.Text)
-                            , fr.lbl_gorevli.Text
-                            , cmb_otobus.Text);
-                        btn.BackColor = Color.Tomato;
-                    }
+                    var data = fr.Data;
+                    data.OtobusPlaka = cmb_otobus.Text;
+                    var y = yolcuRepository.Save(data);
+                    btn.BackColor = Color.Tomato;
+                    btn.Tag = y;
                     switch (durum)
                     {
                         case 0:
@@ -176,17 +146,11 @@ namespace OtobusBiletSatisi
             else
             {
                 Islem_Yap2 fr = new Islem_Yap2();
-                fr.lbl_koltuk_no.Text = btn.Name.Split('_')[1];
-                fr.txt_mustari.Text = result.AdSoyad;
-                fr.txt_mustari.Enabled = false;
-                fr.cmb_musteri_cinsiyet.SelectedIndex = result.Cinsiyet == "E" ? 0 : 1;
-                fr.cmb_musteri_cinsiyet.Enabled = false;
+                fr.Data = yolcu;
                 var r = fr.ShowDialog();
                 if (r == DialogResult.OK)
                 {
-                    var rowToDelete = dt.AsEnumerable().Where(row => row.Field<int>("ID") == result.Id).First();
-
-                    dt.Rows.Remove(rowToDelete);
+                    yolcuRepository.Delete(yolcu.Id);
                 }
                 DuzenKur();
             }
@@ -195,9 +159,8 @@ namespace OtobusBiletSatisi
         }
         private void dgv_update()
         {
-            var results = MyData.table_yolcu.AsEnumerable().Where(myRow => myRow.Field<string>("Otobus_Plaka") == cmb_otobus.Text);
-            DataView view = results.AsDataView();
-            dataGridView1.DataSource = view;
+            var results = yolcuRepository.GetAll(cmb_otobus.Text);
+            dataGridView1.DataSource = results;
         }
 
         private void cmb_otobus_SelectedIndexChanged(object sender, EventArgs e)
