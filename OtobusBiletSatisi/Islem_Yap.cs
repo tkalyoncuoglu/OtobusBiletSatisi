@@ -23,6 +23,7 @@ namespace OtobusBiletSatisi
             lbl_tarih.Text = DateTime.Now.ToString();
             cmb_musteri_cinsiyet.SelectedIndex = 0;
             cmb_islem.SelectedIndex = 0;
+            lbl_koltuk_no.Text = Data.KoltukNo.ToString();
           
         }
 
@@ -36,7 +37,6 @@ namespace OtobusBiletSatisi
             
             if (txt_mustari.Text.Length > 0 && cmb_musteri_cinsiyet.SelectedIndex >= 0 && cmb_islem.SelectedIndex >= 0)
             {
-                Data = new Yolcu();
                 Data.AdSoyad = txt_mustari.Text;
                 Data.Cinsiyet = (string)cmb_musteri_cinsiyet.SelectedItem;
                 Data.Durum = (int)cmb_islem.SelectedIndex;

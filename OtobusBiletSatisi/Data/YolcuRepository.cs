@@ -66,7 +66,8 @@ namespace OtobusBiletSatisi.Data
                               Durum = myRow.Field<int>("Durum"),
                               AdSoyad = myRow.Field<string>("Ad_Soyad"),
                               IslemTarihi = myRow.Field<DateTime>("Islem_Tarih"),
-                              IslemYapan = myRow.Field<string>("Islem_Yapan")
+                              IslemYapan = myRow.Field<string>("Islem_Yapan"),
+                              OtobusPlaka = myRow.Field<string>("Otobus_Plaka")
                           }).ToList();
 
             return result;
@@ -91,7 +92,9 @@ namespace OtobusBiletSatisi.Data
                 Durum = row.Field<int>("Durum"),
                 AdSoyad = row.Field<string>("Ad_Soyad"),
                 IslemTarihi = row.Field<DateTime>("Islem_Tarih"),
-                IslemYapan = row.Field<string>("Islem_Yapan")
+                IslemYapan = row.Field<string>("Islem_Yapan"),
+                OtobusPlaka = row.Field<string>("Otobus_Plaka")
+
             };
 
         }

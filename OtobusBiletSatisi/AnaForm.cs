@@ -109,31 +109,29 @@ namespace OtobusBiletSatisi
         {
             Button btn = (Button)sender;
 
+            var koltukNo = btn.Name.Split('_')[1];
+
             var yolcu = btn.Tag as Yolcu;
 
             if (yolcu == null)
             {
                 Islem_Yap fr = new Islem_Yap();
-                fr.lbl_koltuk_no.Text = btn.Name.Split('_')[1];
+                fr.Data = new Yolcu { OtobusPlaka = cmb_otobus.Text, KoltukNo = Convert.ToInt32(koltukNo) };
                 var r = fr.ShowDialog();
-                int durum = fr.cmb_islem.SelectedIndex;
-                string cinsiyet = fr.cmb_musteri_cinsiyet.SelectedItem as string;
                 if (r == DialogResult.OK)
                 {
                     var data = fr.Data;
-                    data.OtobusPlaka = cmb_otobus.Text;
                     var y = yolcuRepository.Save(data);
                     btn.BackColor = Color.Tomato;
-                    btn.Tag = y;
-                    switch (durum)
+                    switch (y.Durum)
                     {
                         case 0:
                             btn.BackColor = Color.Yellow;
-                            if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
+                            if (y.Cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
                             break;
                         case 1:
                             btn.BackColor = Color.GreenYellow;
-                            if (cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
+                            if (y.Cinsiyet == "Erkek") btn.Text += " E"; else btn.Text += " K";
                             break;
 
                         case 2:
@@ -152,8 +150,9 @@ namespace OtobusBiletSatisi
                 {
                     yolcuRepository.Delete(yolcu.Id);
                 }
-                DuzenKur();
+                
             }
+            DuzenKur();
             dgv_update();
 
         }
